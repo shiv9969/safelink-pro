@@ -102,17 +102,15 @@ def final():
     if not token or not link_id:
         return "Access Denied!"
 
-    # ⏱️ time check (anti-bypass)
     if time.time() - start_time < 3:
-        return "Too fast! Wait properly."
+        return "Too fast!"
 
     url = get_link(link_id)
 
-    # Clear session (one-time use)
     session.clear()
 
-    return redirect(url)
-
+    # 👉 Redirect nahi — page show kar
+    return render_template("redirect.html", target=url)
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":

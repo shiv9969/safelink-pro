@@ -10,6 +10,17 @@ body {
     color: white;
     font-family: sans-serif;
     text-align: center;
+
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(20px);
+    transition: all 0.6s ease;
+}
+
+body.loaded {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
 }
 
 .container {
@@ -18,7 +29,6 @@ body {
     padding: 40px;
     border-radius: 20px;
     backdrop-filter: blur(15px);
-    animation: fadeIn 1s ease;
 }
 
 h2 {
@@ -35,11 +45,6 @@ h2 {
     background: linear-gradient(90deg, #00ffc3, #00aaff);
     color: black;
     margin-top: 15px;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(30px);}
-    to { opacity: 1; transform: translateY(0);}
 }
 </style>
 
@@ -65,6 +70,14 @@ h2 {
 </div>
 
 <script>
+window.addEventListener("load", () => {
+    document.body.classList.add("loaded");
+});
+
+document.querySelector("form").addEventListener("submit", () => {
+    document.body.classList.remove("loaded");
+});
+
 function captchaSuccess() {
     document.getElementById("continueBtn").style.display = "inline-block";
 }

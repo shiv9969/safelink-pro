@@ -12,6 +12,7 @@ body {
     margin-top: 150px;
 }
 
+/* Loader */
 .loader {
     border: 5px solid #222;
     border-top: 5px solid #00ffc3;
@@ -31,13 +32,12 @@ body {
 
 <body>
 
-<h2>🔐 Securing your link...</h2>
+<h2>🔐 Opening your link...</h2>
 <div class="loader"></div>
 
 <script>
-setTimeout(() => {
-    window.location.href = "{{ target }}";
-}, 800); // delay (0.8 sec)
+/* Instant redirect (no delay) */
+window.location.replace("{{ target }}");
 </script>
 
 </body>

@@ -1,9 +1,10 @@
-from flask import Flask, request, redirect, render_template, abort
+from flask import Flask, request, redirect, render_template, abort, session
 import string
 import random
 import requests
 from pymongo import MongoClient
 import info
+import time
 
 app = Flask(__name__)
 app.secret_key = info.SECRET_KEY
@@ -16,6 +17,9 @@ collection = db[info.COLLECTION_NAME]
 # ---------------- UTIL ----------------
 def generate_id(length=8):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
+
+def generate_token():
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=20))
 
 def save_link(link_id, url):
     collection.insert_one({"id": link_id, "url": url})
@@ -45,8 +49,9 @@ def create():
     return render_template("index.html", safe_link=safe_link)
 
 
+# 🔐 STEP 1 (Captcha)
 @app.route("/s/<link_id>", methods=["GET", "POST"])
-def safelink(link_id):
+def step1(link_id):
     url = get_link(link_id)
 
     if not url:
@@ -69,7 +74,45 @@ def safelink(link_id):
     if not verify.get("success"):
         return "CAPTCHA failed!"
 
+    # 🔐 Generate token + store in session
+    token = generate_token()
+    session["token"] = token
+    session["link_id"] = link_id
+    session["time"] = time.time()
+
+    return redirect("/step2")
+
+
+# 🔁 STEP 2 (Intermediate)
+@app.route("/step2")
+def step2():
+    if "token" not in session:
+        return "Access Denied!"
+
+    return render_template("step2.html")
+
+
+# 🚀 FINAL STEP
+@app.route("/final")
+def final():
+    token = session.get("token")
+    link_id = session.get("link_id")
+    start_time = session.get("time")
+
+    if not token or not link_id:
+        return "Access Denied!"
+
+    # ⏱️ time check (anti-bypass)
+    if time.time() - start_time < 3:
+        return "Too fast! Wait properly."
+
+    url = get_link(link_id)
+
+    # Clear session (one-time use)
+    session.clear()
+
     return redirect(url)
+
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":

@@ -12,13 +12,16 @@ body {
     margin-top: 120px;
 }
 
+/* Card */
 .container {
     background: rgba(20,20,20,0.8);
     padding: 40px;
     border-radius: 20px;
     display: inline-block;
+    box-shadow: 0 0 20px rgba(0,255,200,0.1);
 }
 
+/* Button */
 button {
     padding: 12px 25px;
     border-radius: 10px;
@@ -26,6 +29,30 @@ button {
     background: linear-gradient(90deg, #00ffc3, #00aaff);
     color: black;
     cursor: pointer;
+    transition: 0.3s;
+}
+
+button:disabled {
+    background: #333;
+    color: #777;
+    cursor: not-allowed;
+}
+
+/* Progress bar */
+.progress {
+    width: 100%;
+    height: 6px;
+    background: #222;
+    border-radius: 5px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00ffc3, #00aaff);
+    transition: width 2s linear;
 }
 </style>
 
@@ -36,13 +63,33 @@ button {
 <div class="container">
 
 <h2>🔐 Almost Done</h2>
-<p>Click below to get your link</p>
+<p>Preparing your secure link...</p>
+
+<div class="progress">
+    <div class="progress-bar" id="bar"></div>
+</div>
 
 <a href="/final">
-<button>Get Link</button>
+<button id="btn" disabled>Get Link</button>
 </a>
 
 </div>
+
+<script>
+let bar = document.getElementById("bar");
+let btn = document.getElementById("btn");
+
+// Start progress animation
+setTimeout(() => {
+    bar.style.width = "100%";
+}, 100);
+
+// Enable button after 2 sec
+setTimeout(() => {
+    btn.disabled = false;
+    btn.innerText = "Get Link";
+}, 2000);
+</script>
 
 </body>
 </html>

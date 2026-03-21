@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Redirecting...</title>
+
+<style>
+body {
+    background: #0a0a0a;
+    color: white;
+    font-family: sans-serif;
+    text-align: center;
+    margin-top: 150px;
+}
+
+.loader {
+    border: 5px solid #222;
+    border-top: 5px solid #00ffc3;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: auto;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>🔐 Securing your link...</h2>
+<div class="loader"></div>
+
+<script>
+setTimeout(() => {
+    window.location.href = "{{ target }}";
+}, 800); // delay (0.8 sec)
+</script>
+
+</body>
+</html>

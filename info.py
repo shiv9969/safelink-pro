@@ -1,14 +1,14 @@
 # 🔐 SECRET
-SECRET_KEY = "your_secret"
+SECRET_KEY = "shiv"
 
 # 🔑 CAPTCHA
-RECAPTCHA_SITE_KEY = "your_site_key"
-RECAPTCHA_SECRET_KEY = "your_secret_key"
+RECAPTCHA_SITE_KEY = "6LddGJIsAAAAAEIi29EUEhu_21LQJbeuhoNL0raK"
+RECAPTCHA_SECRET_KEY = "6LddGJIsAAAAANbJmudv0hJ_NAF97OFbnWeTouAc"
 
 # 🌐 BASE URL
 BASE_URL = "https://safe-url-ff28643cb1cc.herokuapp.com/"
 
 # 🍃 MONGODB
-MONGO_URI = "your_mongodb_connection_string"
+MONGO_URI = "mongodb+srv://shiv:mishraji@cluster0.80smvxk.mongodb.net/?appName=Cluster0"
 DB_NAME = "safelink"
-COLLECTION_NAME = "links"
+COLLECTION_NAME = "shiv"

@@ -39,7 +39,7 @@ def create():
     url = request.form.get("url")
 
     if not url or not url.startswith("http"):
-        return "Invalid URL!"
+    return render_template("index.html", error="Invalid URL! Please enter a valid link.")
 
     link_id = generate_id()
     save_link(link_id, url)

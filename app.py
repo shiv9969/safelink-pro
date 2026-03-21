@@ -29,9 +29,16 @@ def get_link(link_id):
     return data["url"] if data else None
 
 # ---------------- ROUTES ----------------
+
 @app.route("/")
 def home():
-    return render_template("index.html")
+    safe_link = request.args.get("link")
+    error = None
+
+    if request.args.get("error"):
+        error = "Invalid URL! Please enter a valid link."
+
+    return render_template("index.html", safe_link=safe_link, error=error)
 
 
 @app.route("/create", methods=["POST"])
@@ -39,7 +46,7 @@ def create():
     url = request.form.get("url")
 
     if not url or not url.startswith("http"):
-    return render_template("index.html", error="Invalid URL! Please enter a valid link.")
+        return redirect("/?error=1")
 
     link_id = generate_id()
     save_link(link_id, url)
@@ -74,16 +81,15 @@ def step1(link_id):
     if not verify.get("success"):
         return "CAPTCHA failed!"
 
-    # 🔐 Generate token + store in session
-    token = generate_token()
-    session["token"] = token
+    # Token store
+    session["token"] = generate_token()
     session["link_id"] = link_id
     session["time"] = time.time()
 
     return redirect("/step2")
 
 
-# 🔁 STEP 2 (Intermediate)
+# 🔁 STEP 2
 @app.route("/step2")
 def step2():
     if "token" not in session:
@@ -92,25 +98,21 @@ def step2():
     return render_template("step2.html")
 
 
-# 🚀 FINAL STEP
+# 🚀 FINAL
 @app.route("/final")
 def final():
     token = session.get("token")
     link_id = session.get("link_id")
-    start_time = session.get("time")
 
     if not token or not link_id:
         return "Access Denied!"
-
-    if time.time() - start_time < 3:
-        return "Too fast!"
 
     url = get_link(link_id)
 
     session.clear()
 
-    # 👉 Redirect nahi — page show kar
     return render_template("redirect.html", target=url)
+
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":

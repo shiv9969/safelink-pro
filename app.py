@@ -46,7 +46,7 @@ def create():
 
     safe_link = info.BASE_URL + "s/" + link_id
 
-    return render_template("index.html", safe_link=safe_link)
+    return redirect("/?link=" + safe_link)
 
 
 # 🔐 STEP 1 (Captcha)

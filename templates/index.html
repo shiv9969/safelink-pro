@@ -6,36 +6,42 @@
 <style>
 body {
     margin: 0;
-    background: linear-gradient(135deg, #0a0a0a, #111);
+    overflow: hidden;
     font-family: 'Segoe UI', sans-serif;
     color: white;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: radial-gradient(circle at top, #0a0a0a, #000);
 }
 
-/* Floating card */
+/* PARTICLES CANVAS */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+/* MAIN CARD */
 .container {
+    position: relative;
+    z-index: 2;
+    margin-top: 120px;
+    text-align: center;
     background: rgba(20,20,20,0.7);
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(20px);
     padding: 50px;
     border-radius: 20px;
-    box-shadow: 0 0 40px rgba(0,255,200,0.1);
-    text-align: center;
-    animation: float 3s ease-in-out infinite;
+    box-shadow: 0 0 50px rgba(0,255,200,0.1);
+    animation: fadeIn 1s ease;
 }
 
-/* Title */
+/* TITLE */
 h1 {
     font-size: 32px;
-    margin-bottom: 20px;
     background: linear-gradient(90deg, #00ffc3, #00aaff);
     -webkit-background-clip: text;
     color: transparent;
 }
 
-/* Input */
+/* INPUT */
 input {
     width: 350px;
     padding: 14px;
@@ -44,14 +50,13 @@ input {
     background: #111;
     color: white;
     outline: none;
-    transition: 0.3s;
 }
 
 input:focus {
     box-shadow: 0 0 15px #00ffc3;
 }
 
-/* Button */
+/* BUTTON */
 button {
     padding: 12px 25px;
     border-radius: 10px;
@@ -64,37 +69,25 @@ button {
 }
 
 button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px #00ffc3;
+    transform: scale(1.07);
+    box-shadow: 0 0 25px #00ffc3;
 }
 
-/* Copy Button */
+/* COPY */
 .copy-btn {
     margin-left: 10px;
     background: #222;
     color: white;
 }
 
-/* Floating animation */
-@keyframes float {
-    0%,100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-}
-
-/* Fade in */
-.container {
-    animation: fadeIn 1s ease;
-}
-
+/* ANIMATION */
 @keyframes fadeIn {
     from { opacity: 0; transform: scale(0.9);}
     to { opacity: 1; transform: scale(1);}
 }
 
-/* Success text */
 #copiedText {
     color: #00ffc3;
-    margin-top: 10px;
 }
 </style>
 
@@ -102,9 +95,11 @@ button:hover {
 
 <body>
 
+<canvas id="particles"></canvas>
+
 <div class="container">
 
-<h1>🔐 BoB Files Safe Link</h1>
+<h1 id="typing"></h1>
 
 <form method="POST" action="/create">
 <input type="text" name="url" placeholder="Paste your URL here..." required>
@@ -115,17 +110,30 @@ button:hover {
 {% if safe_link %}
 <h3>Your Safe Link:</h3>
 
-<div style="display:flex; justify-content:center; align-items:center;">
+<div style="display:flex; justify-content:center;">
 <input id="linkBox" value="{{ safe_link }}" readonly>
 <button class="copy-btn" onclick="copyLink()">Copy</button>
 </div>
 
-<p id="copiedText" style="display:none;">Copied successfully!</p>
+<p id="copiedText" style="display:none;">Copied!</p>
 {% endif %}
 
 </div>
 
 <script>
+/* Typing effect */
+let text = "🔐 BoB Files Safe Link";
+let i = 0;
+function type() {
+    if (i < text.length) {
+        document.getElementById("typing").innerHTML += text.charAt(i);
+        i++;
+        setTimeout(type, 50);
+    }
+}
+type();
+
+/* Copy */
 function copyLink() {
     let text = document.getElementById("linkBox").value;
     navigator.clipboard.writeText(text);
@@ -135,6 +143,46 @@ function copyLink() {
 
     setTimeout(()=>{ msg.style.display="none"; }, 2000);
 }
+
+/* PARTICLES */
+let canvas = document.getElementById("particles");
+let ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+for (let i = 0; i < 100; i++) {
+    particles.push({
+        x: Math.random()*canvas.width,
+        y: Math.random()*canvas.height,
+        r: Math.random()*2,
+        dx: (Math.random()-0.5),
+        dy: (Math.random()-0.5)
+    });
+}
+
+function animate() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle = "#00ffc3";
+        ctx.fill();
+
+        p.x += p.dx;
+        p.y += p.dy;
+
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+    });
+
+    requestAnimationFrame(animate);
+}
+
+animate();
 </script>
 
 </body>

@@ -44,6 +44,7 @@ canvas {
     animation: fadeIn 1s ease;
 }
 
+/* TITLE */
 h1 {
     font-size: 32px;
     background: linear-gradient(90deg, #00ffc3, #00aaff);
@@ -51,6 +52,7 @@ h1 {
     color: transparent;
 }
 
+/* INPUT */
 input {
     width: 350px;
     padding: 14px;
@@ -64,6 +66,7 @@ input:focus {
     box-shadow: 0 0 15px #00ffc3;
 }
 
+/* BUTTON */
 button {
     padding: 12px 25px;
     border-radius: 10px;
@@ -80,14 +83,39 @@ button:hover {
     box-shadow: 0 0 25px #00ffc3;
 }
 
+/* COPY BUTTON */
 .copy-btn {
     margin-left: 10px;
     background: #222;
     color: white;
 }
 
+/* SUCCESS TEXT */
 #copiedText {
     color: #00ffc3;
+}
+
+/* ERROR BOX */
+.error-box {
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.4);
+    color: #ff4d4d;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 15px;
+    box-shadow: 0 0 10px rgba(255,0,0,0.2);
+    animation: fadeError 0.5s ease;
+}
+
+@keyframes fadeError {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 </style>
 
@@ -97,7 +125,7 @@ button:hover {
 
 <canvas id="particles"></canvas>
 
-<div class="container" id="card">
+<div class="container">
 
 <h1 id="typing"></h1>
 
@@ -107,6 +135,14 @@ button:hover {
 <button>Generate Safe Link</button>
 </form>
 
+<!-- 🔥 ERROR MESSAGE -->
+{% if error %}
+<div class="error-box">
+    ⚠ {{ error }}
+</div>
+{% endif %}
+
+<!-- 🔗 SAFE LINK -->
 {% if safe_link %}
 <h3>Your Safe Link:</h3>
 
@@ -115,7 +151,7 @@ button:hover {
 <button class="copy-btn" onclick="copyLink()">Copy</button>
 </div>
 
-<p id="copiedText" style="display:none;">Copied!</p>
+<p id="copiedText" style="display:none;">Copied successfully!</p>
 {% endif %}
 
 </div>
@@ -124,13 +160,6 @@ button:hover {
 /* Page load */
 window.addEventListener("load", () => {
     document.body.classList.add("loaded");
-});
-
-/* Fade out on submit */
-document.querySelectorAll("form").forEach(form => {
-    form.addEventListener("submit", () => {
-        document.body.classList.remove("loaded");
-    });
 });
 
 /* Typing */
@@ -194,7 +223,6 @@ function animate() {
     requestAnimationFrame(animate);
 }
 animate();
-
 </script>
 
 </body>

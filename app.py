@@ -32,15 +32,24 @@ def home():
 
 @app.route("/create", methods=["POST"])
 def create():
-    url = request.form.get("url")
+    if request.is_json:
+        data = request.get_json(silent=True) or {}
+        url = data.get("url")
+    else:
+        url = request.form.get("url")
 
     if not url or not url.startswith("http"):
-        return "Invalid URL!"
+        if request.is_json:
+            return {"error": "Invalid URL!"}, 400
+        return "Invalid URL!", 400
 
     link_id = generate_id()
     save_link(link_id, url)
 
     safe_link = info.BASE_URL + "s/" + link_id
+
+    if request.is_json:
+        return {"url": safe_link}
 
     return render_template("index.html", safe_link=safe_link)
 

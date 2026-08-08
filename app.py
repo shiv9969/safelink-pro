@@ -1,3 +1,4 @@
+```python
 from flask import Flask, request, redirect, render_template, abort
 import string
 import random
@@ -44,7 +45,7 @@ def get_link(link_id):
     return data["url"] if data else None
 
 
-# ---------------- ROUTES ----------------
+# ---------------- HOME ----------------
 
 @app.route("/")
 def home():
@@ -56,53 +57,52 @@ def home():
 @app.route("/create", methods=["POST"])
 def create():
     try:
-        # ---------------- GET URL ----------------
+        # Try to read JSON first
+        data = request.get_json(silent=True)
 
-        if request.is_json:
-            data = request.get_json(silent=True) or {}
+        if data is not None:
             url = data.get("url")
+            is_api_request = True
         else:
             url = request.form.get("url")
+            is_api_request = False
 
-        # ---------------- VALIDATE URL ----------------
-
+        # Validate URL
         if not url or not url.startswith(("http://", "https://")):
 
-            if request.is_json:
+            if is_api_request:
                 return {
                     "error": "Invalid URL!"
                 }, 400
 
-            return "Invalid URL!", 400
+            return render_template(
+                "index.html",
+                error="Invalid URL! Please enter a valid link."
+            ), 400
 
-        # ---------------- GENERATE ID ----------------
-
+        # Generate SafeLink ID
         link_id = generate_id()
 
-        # ---------------- SAVE ORIGINAL URL ----------------
-
+        # Save original URL
         save_link(
             link_id,
             url
         )
 
-        # ---------------- GENERATE SAFELINK ----------------
-
+        # Generate SafeLink URL
         safe_link = (
             info.BASE_URL.rstrip("/")
             + "/s/"
             + link_id
         )
 
-        # ---------------- JSON RESPONSE FOR BOT ----------------
-
-        if request.is_json:
+        # API response for bot
+        if is_api_request:
             return {
                 "url": safe_link
             }, 200
 
-        # ---------------- NORMAL BROWSER RESPONSE ----------------
-
+        # Normal browser response
         return render_template(
             "index.html",
             safe_link=safe_link
@@ -114,8 +114,8 @@ def create():
             "Error in /create"
         )
 
-        # Return JSON error to bot
-        if request.is_json:
+        # JSON/API error
+        if request.get_json(silent=True) is not None:
             return {
                 "error": str(e)
             }, 500
@@ -157,16 +157,18 @@ def safelink(link_id):
 
     try:
 
-        verify = requests.post(
+        verify_response = requests.post(
             "https://www.google.com/recaptcha/api/siteverify",
             data={
                 "secret": info.RECAPTCHA_SECRET_KEY,
                 "response": captcha_response
             },
             timeout=15
-        ).json()
+        )
 
-    except Exception as e:
+        verify = verify_response.json()
+
+    except Exception:
 
         app.logger.exception(
             "reCAPTCHA verification error"
@@ -179,7 +181,7 @@ def safelink(link_id):
     if not verify.get("success"):
         return "CAPTCHA failed!", 400
 
-    # ---------------- REDIRECT TO ORIGINAL URL ----------------
+    # ---------------- REDIRECT ----------------
 
     return redirect(url)
 
@@ -188,3 +190,4 @@ def safelink(link_id):
 
 if __name__ == "__main__":
     app.run()
+```

@@ -1,4 +1,3 @@
-
 from flask import Flask, request, redirect, render_template, abort
 import string
 import random
@@ -109,13 +108,7 @@ def create():
 
     except Exception as e:
         app.logger.exception("Error in /create")
-
-        if request.get_json(silent=True) is not None:
-            return {
-                "error": str(e)
-            }, 500
-
-        return redirect("/?error=1")
+        return {"error": str(e)}, 500
 
 
 # ---------------- SAFELINK ----------------

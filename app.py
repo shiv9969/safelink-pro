@@ -1,4 +1,4 @@
-```python
+
 from flask import Flask, request, redirect, render_template, abort
 import string
 import random
@@ -190,4 +190,3 @@ def safelink(link_id):
 
 if __name__ == "__main__":
     app.run()
-```

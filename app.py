@@ -1,3 +1,7 @@
+
+
+
+
 from flask import Flask, request, redirect, render_template, abort
 import string
 import random
@@ -42,6 +46,17 @@ def get_link(link_id):
     })
 
     return data["url"] if data else None
+
+
+# ---------------- DEPLOYMENT CHECK ----------------
+
+@app.route("/health", methods=["GET"])
+def health():
+    return {
+        "status": "ok",
+        "service": "BoB Files Safe Link",
+        "version": "create-json-v2"
+    }, 200
 
 
 # ---------------- HOME ----------------
@@ -108,7 +123,7 @@ def create():
 
     except Exception as e:
         app.logger.exception("Error in /create")
-        return {"error": str(e)}, 500
+        return {"error": str(e), "route": "/create"}, 500
 
 
 # ---------------- SAFELINK ----------------

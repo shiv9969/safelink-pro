@@ -57,12 +57,14 @@ def home():
 @app.route("/create", methods=["POST"])
 def create():
     try:
-        # Try to read JSON first
+        # Bot/API request
         data = request.get_json(silent=True)
 
         if data is not None:
             url = data.get("url")
             is_api_request = True
+
+        # Normal website form request
         else:
             url = request.form.get("url")
             is_api_request = False
@@ -80,50 +82,40 @@ def create():
                 error="Invalid URL! Please enter a valid link."
             ), 400
 
-        # Generate SafeLink ID
+        # Generate ID
         link_id = generate_id()
 
-        # Save original URL
-        save_link(
-            link_id,
-            url
-        )
+        # Save original shortener URL
+        save_link(link_id, url)
 
-        # Generate SafeLink URL
+        # Generate SafeLink
         safe_link = (
             info.BASE_URL.rstrip("/")
             + "/s/"
             + link_id
         )
 
-        # API response for bot
+        # IMPORTANT: bot gets JSON
         if is_api_request:
             return {
                 "url": safe_link
             }, 200
 
-        # Normal browser response
+        # Browser gets normal page
         return render_template(
             "index.html",
             safe_link=safe_link
         )
 
     except Exception as e:
+        app.logger.exception("Error in /create")
 
-        app.logger.exception(
-            "Error in /create"
-        )
-
-        # JSON/API error
         if request.get_json(silent=True) is not None:
             return {
                 "error": str(e)
             }, 500
 
-        # Browser error
-        return redirect(
-            "/?error=1"
-        )
+        return redirect("/?error=1")
 
 
 # ---------------- SAFELINK ----------------

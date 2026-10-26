@@ -1,14 +1,12 @@
-# 🔐 SECRET
-SECRET_KEY = "shiv"
+import os
 
-# 🔑 CAPTCHA
-RECAPTCHA_SITE_KEY = "6LcDtf0sAAAAAAMzp12KdexP7oL7zVMjHvI0k4gq"
-RECAPTCHA_SECRET_KEY = "6LcDtf0sAAAAALDPF8g7lAGbdaOUg49E-izMMiIp"
+# Keep secrets in deployment environment variables, never in source control.
+SECRET_KEY = os.environ.get("SECRET_KEY", "change-this-secret")
+RECAPTCHA_SITE_KEY = os.environ.get("RECAPTCHA_SITE_KEY", "")
+RECAPTCHA_SECRET_KEY = os.environ.get("RECAPTCHA_SECRET_KEY", "")
 
-# 🌐 BASE URL
-BASE_URL = "https://bob-files-safelink.vercel.app/"
+BASE_URL = os.environ.get("BASE_URL", "https://bob-files-safelink.vercel.app/")
 
-# 🍃 MONGODB
-MONGO_URI = "mongodb+srv://shiv:mishraji@cluster0.80smvxk.mongodb.net/?appName=Cluster0"
-DB_NAME = "safelink"
-COLLECTION_NAME = "shiv"
+MONGO_URI = os.environ.get("MONGO_URI", "")
+DB_NAME = os.environ.get("DB_NAME", "safelink")
+COLLECTION_NAME = os.environ.get("COLLECTION_NAME", "shiv")
